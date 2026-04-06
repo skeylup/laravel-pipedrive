@@ -327,9 +327,9 @@ return [
     |
     */
     'jobs' => [
-        'sync_queue' => env('PIPEDRIVE_SYNC_QUEUE', 'pipedrive-sync'),
-        'webhook_queue' => env('PIPEDRIVE_WEBHOOK_QUEUE', 'pipedrive-webhooks'),
-        'retry_queue' => env('PIPEDRIVE_RETRY_QUEUE', 'pipedrive-retry'),
+        'sync_queue' => env('PIPEDRIVE_SYNC_QUEUE', 'default'),
+        'webhook_queue' => env('PIPEDRIVE_WEBHOOK_QUEUE', 'default'),
+        'retry_queue' => env('PIPEDRIVE_RETRY_QUEUE', 'default'),
         'timeout' => env('PIPEDRIVE_JOB_TIMEOUT', 3600),
         'max_tries' => env('PIPEDRIVE_JOB_MAX_TRIES', 3),
         'prefer_async' => env('PIPEDRIVE_PREFER_ASYNC', false),

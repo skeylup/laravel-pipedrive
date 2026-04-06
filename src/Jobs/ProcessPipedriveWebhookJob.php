@@ -56,7 +56,7 @@ class ProcessPipedriveWebhookJob implements ShouldQueue
         $this->metadata = $metadata;
 
         // Set queue based on configuration
-        $queue = config('pipedrive.jobs.webhook_queue', 'pipedrive-webhooks');
+        $queue = config('pipedrive.jobs.webhook_queue', 'default');
         $this->onQueue($queue);
 
         // Override tries and timeout from config
@@ -526,7 +526,7 @@ class ProcessPipedriveWebhookJob implements ShouldQueue
      */
     protected function moveToDeadLetterQueue(): void
     {
-        $deadLetterQueue = config('pipedrive.jobs.retry_queue', 'pipedrive-retry');
+        $deadLetterQueue = config('pipedrive.jobs.retry_queue', 'default');
 
         // Create a new job for the dead letter queue with the original data
         $deadLetterJob = new static(

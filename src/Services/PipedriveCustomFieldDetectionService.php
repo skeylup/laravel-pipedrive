@@ -215,7 +215,7 @@ class PipedriveCustomFieldDetectionService
             if ($useJobs) {
                 // Dispatch job for async execution
                 SyncPipedriveCustomFieldsJob::dispatch($entityType)
-                    ->onQueue(config('pipedrive.sync.queue', 'pipedrive-sync'));
+                    ->onQueue(config('pipedrive.jobs.sync_queue', 'default'));
 
                 Log::info('Custom fields sync job dispatched', [
                     'entity_type' => $entityType,

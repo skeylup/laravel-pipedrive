@@ -96,7 +96,7 @@ class SyncOptions extends Data
     public static function forScheduler(
         string $entityType,
         bool $force = true,
-        ?string $queue = 'pipedrive-sync'
+        ?string $queue = null
     ): self {
         return new self(
             entityType: $entityType,
@@ -105,7 +105,7 @@ class SyncOptions extends Data
             force: $force,
             verbose: false,
             async: true,
-            queue: $queue,
+            queue: $queue ?? config('pipedrive.jobs.sync_queue', 'default'),
             context: 'scheduler',
             trackProgress: false,
             emitEvents: true
@@ -125,7 +125,7 @@ class SyncOptions extends Data
             'force' => false,
             'verbose' => false,
             'async' => true,
-            'queue' => 'pipedrive-sync',
+            'queue' => config('pipedrive.jobs.sync_queue', 'default'),
             'context' => 'job',
             'trackProgress' => true,
             'emitEvents' => true,
@@ -150,7 +150,7 @@ class SyncOptions extends Data
             force: true,
             verbose: false,
             async: true,
-            queue: 'pipedrive-webhooks',
+            queue: config('pipedrive.jobs.webhook_queue', 'default'),
             context: 'webhook',
             metadata: ['webhook_data' => $webhookData],
             trackProgress: false,

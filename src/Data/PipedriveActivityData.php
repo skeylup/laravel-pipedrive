@@ -3,6 +3,7 @@
 namespace Skeylup\LaravelPipedrive\Data;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
@@ -111,7 +112,7 @@ class PipedriveActivityData extends BasePipedriveData
             return static::from($filteredData);
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('Error creating PipedriveActivityData DTO', [
+            Log::error('Error creating PipedriveActivityData DTO', [
                 'error' => $e->getMessage(),
                 'data' => $filteredData,
                 'trace' => $e->getTraceAsString(),

@@ -3,6 +3,7 @@
 namespace Skeylup\LaravelPipedrive;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Skeylup\LaravelPipedrive\Commands\ClearPipedriveCacheCommand;
 use Skeylup\LaravelPipedrive\Commands\ClearPipedriveOAuthTokenCommand;
 use Skeylup\LaravelPipedrive\Commands\InstallPipedriveCommand;
@@ -84,9 +85,9 @@ class LaravelPipedriveServiceProvider extends PackageServiceProvider
         // Register existing services
         $this->app->singleton(PipedriveCustomFieldService::class);
         $this->app->singleton(PipedriveCustomFieldDetectionService::class);
-        $this->app->singleton(PipedriveAuthService::class);
+        $this->app->scoped(PipedriveAuthService::class);
         $this->app->singleton(PipedriveEntityLinkService::class);
-        $this->app->singleton(PipedriveCacheService::class);
+        $this->app->scoped(PipedriveCacheService::class);
         $this->app->singleton(PipedriveQueryOptimizationService::class);
 
         // Register entity configuration service
@@ -238,10 +239,10 @@ class LaravelPipedriveServiceProvider extends PackageServiceProvider
                     ->withoutOverlapping()
                     ->runInBackground()
                     ->onFailure(function () {
-                        \Log::error('Pipedrive scheduled sync failed');
+                        Log::error('Pipedrive scheduled sync failed');
                     })
                     ->onSuccess(function () {
-                        \Log::info('Pipedrive scheduled sync completed successfully');
+                        Log::info('Pipedrive scheduled sync completed successfully');
                     });
             }
 
@@ -273,10 +274,10 @@ class LaravelPipedriveServiceProvider extends PackageServiceProvider
                     ->withoutOverlapping()
                     ->runInBackground()
                     ->onFailure(function () {
-                        \Log::error('Pipedrive custom fields scheduled sync failed');
+                        Log::error('Pipedrive custom fields scheduled sync failed');
                     })
                     ->onSuccess(function () {
-                        \Log::info('Pipedrive custom fields scheduled sync completed successfully');
+                        Log::info('Pipedrive custom fields scheduled sync completed successfully');
                     });
             }
         });

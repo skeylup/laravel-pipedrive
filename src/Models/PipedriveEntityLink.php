@@ -226,7 +226,7 @@ class PipedriveEntityLink extends Model
      */
     public function getAgeInDays(): int
     {
-        return $this->created_at->diffInDays(now());
+        return (int) $this->created_at->diffInDays(now());
     }
 
     /**
@@ -238,7 +238,7 @@ class PipedriveEntityLink extends Model
             return null;
         }
 
-        return $this->last_synced_at->diffInDays(now());
+        return (int) $this->last_synced_at->diffInDays(now());
     }
 
     /**

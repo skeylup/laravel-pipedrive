@@ -344,7 +344,7 @@ class SyncPipedriveEntityJob implements ShouldQueue
     /**
      * Get job timeout
      */
-    public function retryUntil(): \DateTime
+    public function retryUntil(): \DateTimeInterface
     {
         return now()->addSeconds($this->timeout);
     }

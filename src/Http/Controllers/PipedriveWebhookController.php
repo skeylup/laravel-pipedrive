@@ -4,20 +4,12 @@ namespace Skeylup\LaravelPipedrive\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use Skeylup\LaravelPipedrive\Http\Middleware\VerifyPipedriveWebhook;
 use Skeylup\LaravelPipedrive\Services\PipedriveMergeDetectionService;
 use Skeylup\LaravelPipedrive\Services\PipedriveWebhookService;
 
-class PipedriveWebhookController extends Controller
+class PipedriveWebhookController
 {
-    public function __construct()
-    {
-        // Apply webhook verification middleware to all methods except health
-        $this->middleware(VerifyPipedriveWebhook::class)->except(['health']);
-    }
-
     /**
      * Handle incoming Pipedrive webhook
      */

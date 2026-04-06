@@ -185,7 +185,7 @@ abstract class BasePipedriveModel extends Model
             return null;
         }
 
-        return $this->pipedrive_add_time->diffInDays(now());
+        return (int) $this->pipedrive_add_time->diffInDays(now());
     }
 
     /**
@@ -197,7 +197,7 @@ abstract class BasePipedriveModel extends Model
             return null;
         }
 
-        return $this->pipedrive_update_time->diffInDays(now());
+        return (int) $this->pipedrive_update_time->diffInDays(now());
     }
 
     /**

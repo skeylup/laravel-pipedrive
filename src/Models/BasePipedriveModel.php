@@ -3,12 +3,25 @@
 namespace Skeylup\LaravelPipedrive\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Skeylup\LaravelPipedrive\Traits\OptimizedPipedriveQueries;
 
 abstract class BasePipedriveModel extends Model
 {
     use OptimizedPipedriveQueries;
+
+    /**
+     * Override Laravel 13's newCollection to bypass HasCollection::resolveCollectionFromAttribute()
+     * which tries to instantiate the parent class via `new (get_parent_class(...))()` and fails
+     * because BasePipedriveModel is abstract.
+     *
+     * @param  array<array-key, \Illuminate\Database\Eloquent\Model>  $models
+     */
+    public function newCollection(array $models = []): Collection
+    {
+        return new Collection($models);
+    }
 
     /**
      * Get the attributes that should be cast.

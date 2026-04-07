@@ -32,9 +32,9 @@ class PushToPipedriveJob implements ShouldQueue
 
     public int $pipedriveId;
 
-    public ?string $queue;
-
     public int $maxRetries;
+
+    public int $tries = 3;
 
     /**
      * Create a new job instance.
@@ -397,23 +397,51 @@ class PushToPipedriveJob implements ShouldQueue
                 default => throw new \Exception("Unsupported entity type for update: {$this->entityType}")
             };
 
-            // Convert response to array if it's an object
+            // The devio/pipedrive SDK returns a Devio\Pipedrive\Http\Response
+            // whose internal state lives in protected properties, so a naive
+            // json_encode() yields an empty array. Use the public getters
+            // instead so the calling code can rely on `success`/`data`.
+            if ($response instanceof \Devio\Pipedrive\Http\Response) {
+                $content = $response->getContent();
+                $contentArray = $content ? json_decode(json_encode($content), true) : [];
+
+                return [
+                    'success' => $response->isSuccess(),
+                    'status_code' => $response->getStatusCode(),
+                    'data' => $contentArray['data'] ?? null,
+                    'error' => $contentArray['error'] ?? null,
+                    'error_info' => $contentArray['error_info'] ?? null,
+                    'raw' => $contentArray,
+                ];
+            }
+
             if (is_object($response)) {
                 $response = json_decode(json_encode($response), true);
             }
 
             return $response;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            $detail = $e->getMessage();
+
+            // Surface the actual Pipedrive API error body when the SDK throws
+            // a Guzzle BadResponseException, otherwise we just see "Unknown error".
+            if (method_exists($e, 'getResponse') && $e->getResponse() !== null) {
+                $body = (string) $e->getResponse()->getBody();
+                if ($body !== '') {
+                    $detail .= ' | response: '.$body;
+                }
+            }
+
             Log::error("Pipedrive API update failed for {$this->entityType} {$this->pipedriveId} in job", [
-                'error' => $e->getMessage(),
+                'error' => $detail,
                 'update_data' => $updateData,
-                'job_id' => $this->job->getJobId() ?? 'unknown',
+                'job_id' => $this->job?->getJobId() ?? 'unknown',
             ]);
 
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => $detail,
             ];
         }
     }
@@ -540,11 +568,11 @@ class PushToPipedriveJob implements ShouldQueue
     /**
      * Get job timeout
      */
-    public function retryUntil(): \DateTime
+    public function retryUntil(): \DateTimeInterface
     {
         $timeout = config('pipedrive.jobs.timeout', 3600);
 
-        return now()->addSeconds($timeout);
+        return now()->toDateTimeImmutable()->modify('+'.$timeout.' seconds');
     }
 
     /**

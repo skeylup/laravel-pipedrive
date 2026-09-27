@@ -251,9 +251,9 @@ class LaravelPipedriveServiceProvider extends PackageServiceProvider
                 $customFieldsFrequency = config('pipedrive.sync.scheduler.custom_fields.frequency_hours', 1);
                 $customFieldsForce = config('pipedrive.sync.scheduler.custom_fields.force', true);
 
-                $customFieldsCommand = $schedule->command('pipedrive:sync-custom-fields', [
-                    '--force' => $customFieldsForce,
-                ]);
+                // A bare flag: Schedule::command() compiles ['--force' => true] to --force='1', which the
+                // value-less --force option rejects ("does not accept a value").
+                $customFieldsCommand = $schedule->command('pipedrive:sync-custom-fields', $customFieldsForce ? ['--force'] : []);
 
                 // Set frequency based on configuration
                 if ($customFieldsFrequency >= 24) {

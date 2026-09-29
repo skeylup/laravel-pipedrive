@@ -12,9 +12,12 @@ use Skeylup\LaravelPipedrive\Services\PipedriveEntityConfigService;
 
 class ScheduledSyncPipedriveCommand extends Command
 {
+    /**
+     * No {--verbose} here: Symfony already defines it as a global option (-v|vv|vvv),
+     * and redeclaring it throws "An option named "verbose" already exists."
+     */
     public $signature = 'pipedrive:scheduled-sync
-                        {--dry-run : Show what would be synced without actually running the sync}
-                        {--verbose : Enable verbose output}';
+                        {--dry-run : Show what would be synced without actually running the sync}';
 
     public $description = 'Run scheduled synchronization of Pipedrive entities and custom fields using robust job system (always uses standard mode with limit=500 for safety)';
 
@@ -50,20 +53,9 @@ class ScheduledSyncPipedriveCommand extends Command
         $fullData = false; // Always false for scheduled operations
         $force = $config['force'] ?? true;
         $syncCustomFields = $config['sync_custom_fields'] ?? true;
-        $limit = $config['limit'] ?? 500; // Standard limit for scheduled sync
+        $limit = (int) ($config['limit'] ?? 500); // Standard limit for scheduled sync
 
-        // Set memory limit if specified
-        if ($memoryLimit > 0) {
-            $currentLimit = ini_get('memory_limit');
-            $newLimit = $memoryLimit.'M';
-            ini_set('memory_limit', $newLimit);
-
-            if ($isVerbose) {
-                $this->line("📊 Memory limit changed from {$currentLimit} to {$newLimit}");
-            }
-        }
-
-        $this->displaySyncConfiguration($fullData, $force, $syncCustomFields, $memoryLimit);
+        $this->displaySyncConfiguration($fullData, $force, $syncCustomFields, $limit);
 
         if ($isDryRun) {
             $this->info('✅ Dry run completed - configuration validated');
